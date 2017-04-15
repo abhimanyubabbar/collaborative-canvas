@@ -35,31 +35,26 @@ class Properties extends React.Component {
   constructor(props) {
 
     super(props);
-
-    this.state = {
-      color: props.color,
-      width: props.width   
-    };
+    this.color = props.color;
+    this.width = props.width;
   }
 
   handleColorChange(color) {
 
-    console.log(`Color Selected: ${color.hex}`);
-    this.setState({
-      color: color.hex
+    this.color = color.hex;
+    this.props.onChangeComplete({
+      color: this.color,
+      width: this.width
     });
-
-    this.props.onChangeComplete(this.state);
   }
 
   handleNumberChange(number) {
 
-    console.log(`Number Selected: ${number}`);
-    this.setState({
-      width: parseInt(number)
+    this.width = parseInt(number);
+    this.props.onChangeComplete({
+      color: this.color,
+      width: this.width
     });
-
-    this.props.onChangeComplete(this.state);
 
   }
 
@@ -67,8 +62,8 @@ class Properties extends React.Component {
 
     return (
       <div>
-        <CompactPicker color={this.state.color} onChangeComplete={this.handleColorChange.bind(this)}/>
-        <NumberPicker thickness={this.state.width} onChangeComplete={this.handleNumberChange.bind(this)}/>
+        <CompactPicker color={this.color} onChangeComplete={this.handleColorChange.bind(this)}/>
+        <NumberPicker thickness={this.width} onChangeComplete={this.handleNumberChange.bind(this)}/>
       </div>
     );
 

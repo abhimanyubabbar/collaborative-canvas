@@ -17724,10 +17724,8 @@ var Properties = function (_React$Component2) {
 
     var _this2 = _possibleConstructorReturn(this, (Properties.__proto__ || Object.getPrototypeOf(Properties)).call(this, props));
 
-    _this2.state = {
-      color: props.color,
-      width: props.width
-    };
+    _this2.color = props.color;
+    _this2.width = props.width;
     return _this2;
   }
 
@@ -17735,23 +17733,25 @@ var Properties = function (_React$Component2) {
     key: 'handleColorChange',
     value: function handleColorChange(color) {
 
-      console.log('Color Selected: ' + color.hex);
-      this.setState({
-        color: color.hex
-      });
+      console.log('Properties: ' + color);
 
-      this.props.onChangeComplete(this.state);
+      this.color = color.hex;
+      this.props.onChangeComplete({
+        color: this.color,
+        width: this.width
+      });
     }
   }, {
     key: 'handleNumberChange',
     value: function handleNumberChange(number) {
 
-      console.log('Number Selected: ' + number);
-      this.setState({
-        width: parseInt(number)
-      });
+      console.log('Properties: ' + number);
 
-      this.props.onChangeComplete(this.state);
+      this.width = parseInt(number);
+      this.props.onChangeComplete({
+        color: this.color,
+        width: this.width
+      });
     }
   }, {
     key: 'render',
@@ -17760,8 +17760,8 @@ var Properties = function (_React$Component2) {
       return _react2.default.createElement(
         'div',
         null,
-        _react2.default.createElement(_reactColor.CompactPicker, { color: this.state.color, onChangeComplete: this.handleColorChange.bind(this) }),
-        _react2.default.createElement(NumberPicker, { thickness: this.state.width, onChangeComplete: this.handleNumberChange.bind(this) })
+        _react2.default.createElement(_reactColor.CompactPicker, { color: this.color, onChangeComplete: this.handleColorChange.bind(this) }),
+        _react2.default.createElement(NumberPicker, { thickness: this.width, onChangeComplete: this.handleNumberChange.bind(this) })
       );
     }
   }]);

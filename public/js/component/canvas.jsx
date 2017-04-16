@@ -12,8 +12,11 @@ class CanvasComponent extends React.Component {
       width: this.props.width,
       canvas: null};
 
-    // Connect to the socket.
+    // Connect to the socket
+    // and join a default room.
     this.socket = io();
+    console.log('Emitting a join event over the socket to join default room');
+    this.socket.emit('join', {from: null, to: "default"});
   }
 
   // TODO: Check is the nextProps is equal to the

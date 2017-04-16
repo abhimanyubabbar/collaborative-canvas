@@ -10,11 +10,16 @@ var router = require('./route/routes');
 var http = require('http').Server(app);
 require('./utils/socket')(http);
 
+var bodyParser = require('body-parser'); 
+
 app.use('/static', express.static('public'));
 
 app.get('/', (req, res)=> {
   res.sendFile(__dirname+"/public/index.html");
 });
+
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
 app.use('/', router);
 

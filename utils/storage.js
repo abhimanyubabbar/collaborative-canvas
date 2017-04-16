@@ -7,6 +7,15 @@
  * an actual canvas to which the user is connected and therefore helps in
  * restoring the state.
  *
+ * DBModel:
+ *
+ * project= {projectName: {name: projectName, identifier: sessionIdentifier}}
+ * identifier= [events]
+ *
+ * Each canvas project which the clients work on has a specific session.
+ * This is the identifier under which the user sends events to each other.
+ *
+ *
  **/
 
 'use strict';
@@ -17,41 +26,82 @@ function initialize() {
 
   const db = low('db.json');
 
+  const PROJECT = 'project';
+
+  if (!db.has(PROJECT).value()) {
+    db.set(PROJECT, {}).write();
+  }
+
   return {
 
-    createNameSpace: function() {
+    createProject: function(projectName, sessionIdentifier) {
 
-      if (db.has(namespace).value()) {
+      console.log(`DB: Received a call to create new project, name: ${projectName}, identifier: ${sessionIdentifier}`);
+
+      const idx = PROJECT + "." + projectName;
+      if (db.has(idx).value()) {
+        return db.get(idx).value();
+      }
+
+      db.set(idx, {name: projectName, identifier: sessionIdentifier}).write();
+      return db.get(idx).value();
+    },
+
+    createSession: function(identifier) {
+
+      console.log(`DB: Received a call to create session: ${identifier}`);
+
+      if (db.has(identifier).value()) {
         return;
       }
 
-      return db.set(namespace, [])
-        .write();
+      db.set(identifier, []).write();
     },
 
-    addEvent: function(namespace, event) {
+    getProjects: function() {
 
-      console.log(`namespace: ${namespace}, event: ${event}`);
+      console.log(`DB: Received a call to fetch all the projects`);
 
+      return db.get(PROJECT).value();
+    },
+
+    getProject: function(name) {
+
+      console.log(`DB: Received a call to get project by name: ${name}`);
+
+      const idx = PROJECT + "." + name;
+      return db.get(idx).value();
+    },
+
+
+    addEvent: function(identifier, event) {
+
+      if (!db.has(identifier).value()) {
+        console.log(`DB: No data location for the identfier: ${identifier}, dropping.`);
+        return;
+      }
+
+      console.log(`DB: Received a call to add an event, identifier: ${identifier}, event: ${event}`);
       db.get(namespace)
         .push(event)
         .write();
     },
 
-    removeEventById: function(namespace, id) {
+    removeEventById: function(identifier, id) {
 
-      db.get(namespace)
+      db.get(identifier)
         .remove({id: id})
         .write();
     },
 
-    getEvents: function(namespace) {
+    getEvents: function(identifier) {
 
-      return db.get(namespace)
+      console.log(`DB: Received a call to fetch events by identifier: ${identifier}`);
+      return db.get(identifier)
         .value();
     },
 
-    getEventById: function(namespace, id) {
+    getEventById: function(identifier, id) {
 
       return db.get(namespace)
         .find({id: id})

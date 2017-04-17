@@ -1,19 +1,27 @@
+/**
+ *
+ **/
+
 'use strict';
 
 var express = require('express');
 var app = express();
+var router = require('./route/routes');
 var http = require('http').Server(app);
-
-// Initialize the handling of data over sockets.
 require('./utils/socket')(http);
 
-// Expose the public folder
+var bodyParser = require('body-parser'); 
+
 app.use('/static', express.static('public'));
 
 app.get('/', (req, res)=> {
-  console.log(__dirname);
   res.sendFile(__dirname+"/public/index.html");
 });
+
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+app.use('/', router);
 
 http.listen(3000, ()=> {
   console.log('Listening on port: 3000');

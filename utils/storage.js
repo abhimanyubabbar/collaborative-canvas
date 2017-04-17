@@ -82,7 +82,7 @@ function initialize() {
       }
 
       console.log(`DB: Received a call to add an event, identifier: ${identifier}, event: ${event}`);
-      db.get(namespace)
+      db.get(identifier)
         .push(event)
         .write();
     },

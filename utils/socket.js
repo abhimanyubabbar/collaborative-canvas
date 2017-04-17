@@ -34,7 +34,6 @@ function socketHook(http) {
 
       storage.addEvent(room, data);
       socket.to(room).emit('path:created', data);
-
     });
 
     /**
@@ -46,12 +45,17 @@ function socketHook(http) {
      **/
     socket.on('join', (data)=>{
 
-      if (data.from != null) {
-        socket.leave(data.from);
+      var from = data.from;
+      var to = data.to;
+
+      if (from == null) {
+        from = socket.id;
       }
 
-      socket.room = data.to;
-      socket.join(data.to);
+      socket.room = to;
+
+      socket.leave(from);
+      socket.join(to);
     });
 
   });

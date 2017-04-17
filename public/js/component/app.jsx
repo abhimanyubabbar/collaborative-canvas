@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import Canvas from './canvas.jsx';
+import Canvas from './canvas-new.jsx';
 import CanvasProperties from './canvas-properties.jsx';
 
 class App extends React.Component {

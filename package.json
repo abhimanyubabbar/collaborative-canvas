@@ -19,6 +19,8 @@
     "react": "^15.5.4",
     "react-color": "^2.11.4",
     "react-dom": "^15.5.4",
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.3",
     "socket.io": "^1.7.3",
     "uuid": "^3.0.1"
   },

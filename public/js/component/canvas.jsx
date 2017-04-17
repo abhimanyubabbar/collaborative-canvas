@@ -1,6 +1,8 @@
 import React from 'react';
 import 'fabric';
 
+const api = require('../utils/api');
+
 class CanvasComponent extends React.Component {
 
   constructor(props) {
@@ -10,6 +12,8 @@ class CanvasComponent extends React.Component {
     this.state = {
       color: this.props.color,
       width: this.props.width,
+      project: null,
+      identifier: null,
       canvas: null};
 
     // Connect to the socket
@@ -19,8 +23,6 @@ class CanvasComponent extends React.Component {
     this.socket.emit('join', {from: null, to: "default"});
   }
 
-  // TODO: Check is the nextProps is equal to the
-  // old props.
   componentWillReceiveProps(nextProps) {
 
     var canvas = this.state.canvas;
@@ -34,7 +36,7 @@ class CanvasComponent extends React.Component {
     });
   }
 
-  componentDidMount() {
+  setupCanvas() {
 
     var c = new fabric.Canvas('c', {
       isDrawingMode: true,
@@ -47,8 +49,27 @@ class CanvasComponent extends React.Component {
       this.handlePathCreated(e.path);
     });
 
-    this.setState({canvas: c});
+    this.setState({
+      canvas: c,
+      project: project.name,
+      identifier: project.identifier
+    });
+
     this.socketHandler();
+  }
+
+  componentDidMount() {
+
+    api.createProject('default')
+
+      .then(function(project) {
+        this.setupCanvas(project);
+      }.bind(this))
+
+      .catch(function(err) {
+        console.log(err);
+      });
+
   }
 
   // socketHandler handles the data being
@@ -84,9 +105,6 @@ class CanvasComponent extends React.Component {
 
   };
 
-  // handlePathCreated sends the 
-  // path that the user drew over the network
-  // through the socket.
   handlePathCreated(path) {
     this.socket.emit('path:created', path.toJSON());
   }

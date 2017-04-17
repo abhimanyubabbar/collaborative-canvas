@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 var storage = require('../utils/storage');
 var Project = require('../model/session');
+var fabric = require('fabric').fabric;
 
 
 router.get('/projects/:name', (req, res) => {
@@ -16,6 +17,27 @@ router.get('/projects/:name', (req, res) => {
     return;
   }
   res.send({project: project});
+});
+
+router.get('/projects/canvas/:name', (req, res) => {
+
+  console.log(`ROUTER: Received a request to fetch canvas of a project: ${req.params.name}`);
+
+  const project = storage.getProject(req.params.name);
+  if (project == null) {
+    res.send({});
+  }
+
+  const events = storage.getEvents(project.identifier);
+  const canvas = new fabric.createCanvasForNode();
+
+  fabric.util.enlivenObjects(events, (objects)=> {
+    objects.forEach((o)=> {
+      canvas.add(o);
+    });
+  });
+
+  res.send(canvas.toJSON());
 });
 
 router.post('/projects', (req, res) => {

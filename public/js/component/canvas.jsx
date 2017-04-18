@@ -35,6 +35,8 @@ class Canvas extends React.Component {
 
         var canvas = new fabric.Canvas('c', {
           isDrawingMode: true,
+          width: 1024,
+          height: 800
         });
 
         canvas.loadFromJSON(json, canvas.renderAll.bind(canvas));
@@ -132,13 +134,13 @@ class Canvas extends React.Component {
 
   render(){
 
-    const basic = {
-      border: '1px solid black',
+    const canvasStyle = {
+      border: '1px solid grey',
     };
 
     return (
       <div>
-        <canvas width="900" height="600" id="c" style={basic}> </canvas>
+        <canvas id="c" style={canvasStyle}> </canvas>
       </div>
     );
   }

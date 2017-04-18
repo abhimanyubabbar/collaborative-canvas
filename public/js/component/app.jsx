@@ -3,6 +3,7 @@
 import React from 'react';
 import Canvas from './canvas.jsx';
 import CanvasProperties from './canvas-properties.jsx';
+import ProjectState from './project.jsx';
 
 class App extends React.Component {
 
@@ -27,11 +28,28 @@ class App extends React.Component {
   render() {
 
     return (
-      <div className="">
+      <div className="container-fluid">
+        <div className="row">
 
-        <CanvasProperties color={this.state.color} width={this.state.width} onChangeComplete={this.handleCanvasProperties.bind(this)}/>
-        <Canvas color={this.state.color} width={this.state.width}/>
+          <div className="col-md-1">
+            <ProjectState />
+          </div>
 
+
+          <div className="col-md-9">
+            <Canvas 
+              color={this.state.color} 
+              width={this.state.width}/>
+          </div>
+
+          <div className="col-md-2">
+            <CanvasProperties 
+              color={this.state.color} 
+              width={this.state.width} 
+              onChangeComplete={this.handleCanvasProperties.bind(this)}/>
+          </div>
+
+        </div>
       </div>
     );
   }

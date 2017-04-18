@@ -13,6 +13,7 @@
     "babel-preset-react": "^6.24.1",
     "body-parser": "^1.17.1",
     "canvas": "^1.6.5",
+    "classnames": "^2.2.5",
     "express": "^4.15.2",
     "fabric": "^1.7.9",
     "lowdb": "^0.16.2",

@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import Canvas from './canvas-new.jsx';
+import Canvas from './canvas.jsx';
 import CanvasProperties from './canvas-properties.jsx';
 
 class App extends React.Component {
@@ -27,7 +27,7 @@ class App extends React.Component {
   render() {
 
     return (
-      <div>
+      <div className="">
 
         <CanvasProperties color={this.state.color} width={this.state.width} onChangeComplete={this.handleCanvasProperties.bind(this)}/>
         <Canvas color={this.state.color} width={this.state.width}/>

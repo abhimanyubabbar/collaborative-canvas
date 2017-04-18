@@ -29,6 +29,7 @@
     "webpack-dev-server": "^2.4.2"
   },
   "scripts": {
+    "server": "webpack-dev-server --content-base public/build --hot --inline",
     "webpack": "webpack"
   }
 }

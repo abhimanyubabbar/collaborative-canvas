@@ -19,7 +19,7 @@ class NumberPicker extends React.Component {
 
       <div className="form-group">
 
-        <label for="sel"> Brush Width</label>
+        <label htmlFor="sel"> Brush Width</label>
         <select id="sel" className="form-control" value={this.state.thickness} 
           onChange={this.handleChange.bind(this)}>
           <option value="1">1</option>

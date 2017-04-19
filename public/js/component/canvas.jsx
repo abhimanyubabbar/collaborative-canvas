@@ -10,9 +10,6 @@ class Canvas extends React.Component {
     super(props);
 
     this.state = {
-      color: props.color,
-      width: props.width,
-      project: {name: 'default', identifier: 'uuid'},
       canvas: null
     };
 
@@ -28,27 +25,35 @@ class Canvas extends React.Component {
    * Once the canvas has been loaded, we hook the socket handlers
    * and canvas handlers and reset the state.
    **/
-  loadCanvas() {
+  loadCanvas(projectName, sessionIdentifier) {
 
-    api.getCanvasJSON(this.state.project.name)
+    console.log(`CANVAS: Received a request to loadCanvas, name: ${projectName}, ${sessionIdentifier}`);
+
+    api.getCanvasJSON(projectName)
       .then((json)=> {
 
-        var canvas = new fabric.Canvas('c', {
-          isDrawingMode: true,
-          width: 1024,
-          height: 800
-        });
+        var canvas = this.state.canvas;
 
+        if (canvas == null) {
+          canvas = new fabric.Canvas('c', {
+            isDrawingMode: true,
+            width: 1024,
+            height: 800
+          });
+        } else {
+          canvas.clear();
+        }
+
+        console.log(JSON.stringify(json));
         canvas.loadFromJSON(json, canvas.renderAll.bind(canvas));
-        canvas.freeDrawingBrush.color = this.state.color;
-        canvas.freeDrawingBrush.width = this.state.width;
-
+        canvas.freeDrawingBrush.color = this.props.color;
+        canvas.freeDrawingBrush.width = this.props.width;
 
         this.canvasEventHandlers(canvas);
         this.socketEventHandlers(canvas);
 
-        this.socket.emit('join', {from: this.socket.room, to: this.state.project.identifier});
-        this.socket.room = this.state.project.identifier;
+        this.socket.emit('join', {from: this.socket.room, to: sessionIdentifier});
+        this.socket.room = sessionIdentifier;
 
         this.setState({
           canvas: canvas
@@ -83,8 +88,6 @@ class Canvas extends React.Component {
      **/
     this.socket.on('path:created', (rawObjects) => {
 
-      const canvas = this.state.canvas;
-
       fabric.util.enlivenObjects([rawObjects], (objects)=> {
         objects.forEach((o)=> {
           canvas.add(o);
@@ -117,19 +120,34 @@ class Canvas extends React.Component {
 
   componentWillReceiveProps(nextProps) {
 
+    // In case we have only seen a change in the project
+    // identifier, we will reload the whole canvas from the api.
+    if (this.props.project.name != nextProps.project.name) {
+
+      console.log('Now we have a project name mistmatch running fetch');
+      console.log(JSON.stringify(nextProps));
+
+      this.loadCanvas(
+        nextProps.project.name, 
+        nextProps.project.identifier);
+
+      return;
+    }
+
     var canvas = this.state.canvas;
     canvas.freeDrawingBrush.width = nextProps.width;
     canvas.freeDrawingBrush.color = nextProps.color;
 
     this.setState({
-      color: nextProps.color,
-      width: nextProps.width,
       canvas: canvas
     });
   }
 
   componentDidMount() {
-    this.loadCanvas();
+
+    this.loadCanvas(
+      this.props.project.name, 
+      this.props.project.identifier);
   }
 
   render(){

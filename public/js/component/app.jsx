@@ -1,8 +1,9 @@
 'use strict';
 
 import React from 'react';
-import Canvas from './canvas-new.jsx';
+import Canvas from './canvas.jsx';
 import CanvasProperties from './canvas-properties.jsx';
+import ProjectState from './project.jsx';
 
 class App extends React.Component {
 
@@ -11,7 +12,8 @@ class App extends React.Component {
     super(props);
     this.state = {
       color: "#000000",
-      width: 3
+      width: 3,
+      currentProject: {name: 'default', identifier: 'uuid'}
     };
   }
 
@@ -23,15 +25,54 @@ class App extends React.Component {
     });
   }
 
+  handleProjectChangeSuccess(project) {
+
+    console.log(`APP: ${JSON.stringify(project)}`);
+
+    this.setState({
+      currentProject: {
+        name:project.name,
+        identifier: project.identifier
+      }
+    });
+
+  }
+
+  handleProjectChangeFailure(error) {
+    console.log(`Failed: ${error}`);
+  }
+
 
   render() {
 
     return (
-      <div>
+      <div className="container-fluid">
+        <div className="row">
 
-        <CanvasProperties color={this.state.color} width={this.state.width} onChangeComplete={this.handleCanvasProperties.bind(this)}/>
-        <Canvas color={this.state.color} width={this.state.width}/>
+          <div className="col-md-1">
 
+            <ProjectState 
+              onProjectChangeSuccess={this.handleProjectChangeSuccess.bind(this)}
+              onProjectChangeFailure={this.handleProjectChangeFailure.bind(this)}/>
+
+          </div>
+
+
+          <div className="col-md-9">
+            <Canvas 
+              project={this.state.currentProject}
+              color={this.state.color} 
+              width={this.state.width}/>
+          </div>
+
+          <div className="col-md-2">
+            <CanvasProperties 
+              color={this.state.color} 
+              width={this.state.width} 
+              onChangeComplete={this.handleCanvasProperties.bind(this)}/>
+          </div>
+
+        </div>
       </div>
     );
   }

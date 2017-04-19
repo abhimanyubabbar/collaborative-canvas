@@ -12,10 +12,10 @@ require('./utils/socket')(http);
 
 var bodyParser = require('body-parser'); 
 
-app.use('/static', express.static('public'));
+app.use('/public', express.static('public'));
 
 app.get('/', (req, res)=> {
-  res.sendFile(__dirname+"/public/index.html");
+  res.sendFile(__dirname+"/public/build/index.html");
 });
 
 app.use(bodyParser.json()); // for parsing application/json

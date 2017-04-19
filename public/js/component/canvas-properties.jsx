@@ -17,14 +17,20 @@ class NumberPicker extends React.Component {
 
     return (
 
-    <select value={this.state.thickness} onChange={this.handleChange.bind(this)}>
-      <option value="1">1</option>
-      <option value="3">3</option>
-      <option value="5">5</option>
-      <option value="7">7</option>
-      <option value="9">9</option>
-      <option value="11">11</option>
-    </select>
+      <div className="form-group">
+
+        <label htmlFor="sel"> Brush Width</label>
+        <select id="sel" className="form-control" value={this.state.thickness} 
+          onChange={this.handleChange.bind(this)}>
+          <option value="1">1</option>
+          <option value="3">3</option>
+          <option value="5">5</option>
+          <option value="7">7</option>
+          <option value="9">9</option>
+          <option value="11">11</option>
+        </select>
+      </div>
+
     );
   };
 }
@@ -61,10 +67,21 @@ class Properties extends React.Component {
   render() {
 
     return (
+
       <div>
-        <CompactPicker color={this.color} onChangeComplete={this.handleColorChange.bind(this)}/>
-        <NumberPicker thickness={this.width} onChangeComplete={this.handleNumberChange.bind(this)}/>
+        <p><b>Brush Color</b></p>
+        <div>
+          <CompactPicker 
+            color={this.color} 
+            onChangeComplete={this.handleColorChange.bind(this)}/>
+        </div>
+        <div className="spacer-top-md">
+          <NumberPicker 
+            thickness={this.width} 
+            onChangeComplete={this.handleNumberChange.bind(this)}/>
+        </div>
       </div>
+
     );
 
   }

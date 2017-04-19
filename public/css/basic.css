@@ -9,3 +9,11 @@
 .spacer-top-lg {
   margin-top: 40px;
 }
+
+.Modal {
+  position: absolute;
+  top: 100px;
+  left: 200px;
+  right: 200px;
+  bottom: 100px;
+}

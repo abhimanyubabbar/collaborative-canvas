@@ -37,7 +37,8 @@ router.get('/projects/canvas/:name', (req, res) => {
     });
   });
 
-  res.send(canvas.toJSON());
+  // id is an additional property and therefore included.
+  res.send(canvas.toJSON(['id']));
 });
 
 router.post('/projects', (req, res) => {

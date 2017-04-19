@@ -87,10 +87,25 @@ function initialize() {
         .write();
     },
 
-    removeEventById: function(identifier, id) {
+    updateEvent: function(identifier, event) {
+
+      console.log(`UPDATE EVENT ${identifier} : ${JSON.stringify(event)}`);
+
+      if (!db.has(identifier).value()) {
+        console.log(`DB: No data location for the identfier: ${identifier}, dropping.`);
+        return;
+      }
 
       db.get(identifier)
-        .remove({id: id})
+        .find({id: event.id})
+        .assign(event)
+        .write();
+    },
+
+    removeEventById: function(identifier, event) {
+
+      db.get(identifier)
+        .remove({id: event.id})
         .write();
     },
 

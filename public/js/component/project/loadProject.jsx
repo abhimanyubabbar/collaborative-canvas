@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
-import api from '../utils/api';
+import api from '../../utils/api';
 
 const loadProjectStyle = {
   content: {

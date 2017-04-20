@@ -1,9 +1,9 @@
 'use strict';
 
 import React from 'react';
-import Canvas from './canvas.jsx';
-import CanvasProperties from './canvas-properties.jsx';
-import ProjectState from './project.jsx';
+import Canvas from './canvas/canvas.jsx';
+import CanvasProperties from './properties/canvas-properties.jsx';
+import ProjectState from './project/project.jsx';
 
 class App extends React.Component {
 

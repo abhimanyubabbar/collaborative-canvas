@@ -1,6 +1,6 @@
 import React from 'react';
 import 'fabric';
-import api from '../utils/api';
+import api from '../../utils/api';
 import uuid4 from 'uuid/v4';
 
 

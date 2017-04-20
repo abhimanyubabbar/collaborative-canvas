@@ -43,25 +43,45 @@ class Properties extends React.Component {
     super(props);
     this.color = props.color;
     this.width = props.width;
+    this.drawingMode = props.drawingMode;
   }
 
   handleColorChange(color) {
 
+    console.log(`COLORCHANGE called`);
+
     this.color = color.hex;
     this.props.onChangeComplete({
       color: this.color,
-      width: this.width
+      width: this.width,
+      drawingMode: this.drawingMode,
     });
   }
 
   handleNumberChange(number) {
 
+    console.log(`NUMBERCHANGE called`);
+
     this.width = parseInt(number);
     this.props.onChangeComplete({
       color: this.color,
-      width: this.width
+      width: this.width,
+      drawingMode: this.drawingMode,
     });
 
+  }
+
+  handleDrawingModeToggle() {
+
+    console.log(`CHECKBOX reset called`);
+
+    this.drawingMode = !this.drawingMode;
+
+    this.props.onChangeComplete({
+      color: this.color,
+      width: this.width,
+      drawingMode: this.drawingMode,
+    });
   }
 
   render() {
@@ -69,17 +89,32 @@ class Properties extends React.Component {
     return (
 
       <div>
-        <p><b>Brush Color</b></p>
+
         <div>
+          <p><b>Brush Color</b></p>
           <CompactPicker 
             color={this.color} 
             onChangeComplete={this.handleColorChange.bind(this)}/>
         </div>
+
+        <hr/>
+
         <div className="spacer-top-md">
           <NumberPicker 
             thickness={this.width} 
             onChangeComplete={this.handleNumberChange.bind(this)}/>
         </div>
+
+        <hr/>
+
+        <div className="spacer-top-md checkbox">
+          <label>
+            <input type="checkbox" 
+              checked={this.drawingMode} 
+              onChange={this.handleDrawingModeToggle.bind(this)}/><b>Drawing Mode</b>
+          </label>
+        </div>
+
       </div>
 
     );

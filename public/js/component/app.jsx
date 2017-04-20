@@ -13,7 +13,8 @@ class App extends React.Component {
     this.state = {
       color: "#000000",
       width: 3,
-      currentProject: {name: 'default', identifier: 'uuid'}
+      drawingMode: true,
+      currentProject: {name: 'default', identifier: 'uuid'},
     };
   }
 
@@ -21,7 +22,8 @@ class App extends React.Component {
 
     this.setState({
       color: data.color,
-      width: data.width
+      width: data.width,
+      drawingMode: data.drawingMode,
     });
   }
 
@@ -61,14 +63,15 @@ class App extends React.Component {
           <div className="col-md-9">
             <Canvas 
               project={this.state.currentProject}
-              color={this.state.color} 
+              color={this.state.color}
+              drawingMode={this.state.drawingMode}
               width={this.state.width}/>
           </div>
 
           <div className="col-md-2">
             <CanvasProperties 
               color={this.state.color} 
-              width={this.state.width} 
+              width={this.state.width}
               onChangeComplete={this.handleCanvasProperties.bind(this)}/>
           </div>
 

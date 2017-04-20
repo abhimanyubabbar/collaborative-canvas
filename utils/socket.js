@@ -21,9 +21,7 @@ function socketHook(http) {
 
   io.on('connection', (socket) => {
 
-    // Forward the path created event to
-    // all the listeners.
-    socket.on('path:created', (data)=> {
+    socket.on('object:added', (data)=> {
 
       const room = socket.room;
 
@@ -33,7 +31,21 @@ function socketHook(http) {
       }
 
       storage.addEvent(room, data);
-      socket.to(room).emit('path:created', data);
+      socket.to(room).emit('object:added', data);
+    });
+
+    
+    socket.on('object:modified', (data)=> {
+
+      const room = socket.room;
+
+      if (room == null) {
+        console.log(`Socket connection on no room: ${socket.id}`);
+        return;
+      }
+
+      storage.updateEvent(room, data);
+      socket.to(room).emit('object:modified', data);
     });
 
     /**

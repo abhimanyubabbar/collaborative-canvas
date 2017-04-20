@@ -173,7 +173,7 @@ class Canvas extends React.Component {
 
     // In case we have only seen a change in the project
     // identifier, we will reload the whole canvas from the api.
-    if (this.props.project.name != nextProps.project.name) {
+    if (!this.props.project || (this.props.project.name != nextProps.project.name)) {
 
       this.loadCanvas(
         nextProps.project.name, 
@@ -221,40 +221,54 @@ class Canvas extends React.Component {
   }
 
   componentDidMount() {
+    console.log(`EXECUTING COMPONENT DID MOUNT`);
+  }
 
-    // Load the canvas to be displayed.
-    // to the front end.
-    this.loadCanvas(
-      this.props.project.name, 
-      this.props.project.identifier);
+  renderCanvas() {
+
+      const canvasStyle = {
+        border: '1px solid grey',
+        'borderRadius': '2px'
+      };
+
+      return (
+
+        <div>
+
+          <div>
+            <canvas id="c" style={canvasStyle}> </canvas>
+          </div>
+
+          <hr/>
+
+          <div className="spacer-top-md spacer-bottom-md" style={{'textAlign': 'center'}}>
+            <label className="btn btn-default btn-file">
+              Image Upload<input type="file" style={{display: 'none'}} 
+                onChange={this.handleFileChosen.bind(this)}/>
+            </label>
+          </div>
+
+        </div>
+      );
+  }
+
+  renderLoader() {
+
+    return (
+      <div>
+        <h1 style={{'textAlign': 
+          'center', 
+          'fontSize': '7em', 
+          'color': 'lightgrey'}}>NO CANVAS SELECTED</h1>
+      </div>
+    );
   }
 
   render(){
 
-    const canvasStyle = {
-      border: '1px solid grey',
-      'border-radius': '2px'
-    };
+    const project= this.props.project;
+    return project ? this.renderCanvas() : this.renderLoader();
 
-    return (
-
-      <div>
-
-        <div>
-          <canvas id="c" style={canvasStyle}> </canvas>
-        </div>
-
-        <hr/>
-
-        <div className="spacer-top-md spacer-bottom-md" style={{'text-align': 'center'}}>
-          <label className="btn btn-default btn-file">
-            Image Upload<input type="file" style={{display: 'none'}} 
-              onChange={this.handleFileChosen.bind(this)}/>
-          </label>
-        </div>
-
-      </div>
-    );
   }
 }
 

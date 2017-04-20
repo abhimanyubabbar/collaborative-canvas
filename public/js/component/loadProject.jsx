@@ -81,14 +81,22 @@ class LoadProject extends React.Component {
 
         const projectMap = {};
         const projects = JSON.parse(data).projects;
+
         for (var i = 0; i < projects.length; i ++ ) {
           projectMap[projects[i].name] = projects[i];
+        }
+
+        
+        var projectName = "";
+        if (projects.length > 0) {
+          projectName = projects[0].name;
         }
 
         console.log(projectMap);
 
         this.setState({
-          projects:  projectMap
+          projects:  projectMap,
+          projectName: projectName
         });
 
       })
@@ -112,7 +120,6 @@ class LoadProject extends React.Component {
         <option key={name} value={name}>{name}</option>
       );
     }
-
 
     return (
 

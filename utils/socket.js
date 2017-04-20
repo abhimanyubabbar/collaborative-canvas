@@ -14,6 +14,8 @@
 'use strict';
 
 var storage = require('./storage');
+var bunyan = require('bunyan');
+var log = bunyan.createLogger({name: 'sockets'});
 
 function socketHook(http) {
 
@@ -26,7 +28,7 @@ function socketHook(http) {
       const room = socket.room;
 
       if (room == null) {
-        console.log(`Socket connection on no room: ${socket.id}`);
+        log.warning({'socket-id': socket.id}, `Socket connection has no room configured`);
         return;
       }
 
@@ -40,7 +42,7 @@ function socketHook(http) {
       const room = socket.room;
 
       if (room == null) {
-        console.log(`Socket connection on no room: ${socket.id}`);
+        log.warning({'socket-id': socket.id}, `Socket connection has no room configured`);
         return;
       }
 
@@ -67,6 +69,8 @@ function socketHook(http) {
       socket.room = to;
 
       socket.leave(from);
+
+      log.info({'from-room': from, 'to-room': to}, `Migrated the socket to join conversation of other room`);
       socket.join(to);
     });
 

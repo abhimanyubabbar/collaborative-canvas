@@ -10,6 +10,9 @@ var router = require('./route/routes');
 var http = require('http').Server(app);
 require('./utils/socket')(http);
 
+var bunyan = require('bunyan');
+var log = bunyan.createLogger({name: 'server'});
+
 var bodyParser = require('body-parser'); 
 
 app.use('/public', express.static('public'));
@@ -24,5 +27,5 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 app.use('/', router);
 
 http.listen(3000, ()=> {
-  console.log('Listening on port: 3000');
+  log.info({port: 3000},'Server up and running');
 });

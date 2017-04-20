@@ -37,9 +37,8 @@ class Canvas extends React.Component {
 
         if (canvas == null) {
           canvas = new fabric.Canvas('c', {
-            isDrawingMode: true,
-            width: 1024,
-            height: 800
+            width: 1240,
+            height: 740
           });
         } else {
           canvas.clear();
@@ -49,6 +48,7 @@ class Canvas extends React.Component {
         canvas.loadFromJSON(json, canvas.renderAll.bind(canvas));
         canvas.freeDrawingBrush.color = this.props.color;
         canvas.freeDrawingBrush.width = this.props.width;
+        canvas.isDrawingMode = this.props.drawingMode;
 
         this.canvasEventHandlers(canvas);
         this.socketEventHandlers(canvas);
@@ -149,7 +149,6 @@ class Canvas extends React.Component {
     canvas.on('object:added', (e) => {
 
       if (e.target.id != null) {
-        console.log(`=============================== THIS SHOULD NOT HAPPEN`);
         return;
       }
 
@@ -162,8 +161,7 @@ class Canvas extends React.Component {
       console.log(`CANVAS: Fired an object modified event`);
 
       if (e.target.id == null) {
-        console.log(`=============================== THIS SHOULD NOT HAPPEN`);
-        console.log(`===== target identifier should be set =====`);
+        console.log(`===== WARNING: target identifier should be set =====`);
         return;
       }
 
@@ -177,9 +175,6 @@ class Canvas extends React.Component {
     // identifier, we will reload the whole canvas from the api.
     if (this.props.project.name != nextProps.project.name) {
 
-      console.log('Now we have a project name mistmatch running fetch');
-      console.log(JSON.stringify(nextProps));
-
       this.loadCanvas(
         nextProps.project.name, 
         nextProps.project.identifier);
@@ -190,6 +185,7 @@ class Canvas extends React.Component {
     var canvas = this.state.canvas;
     canvas.freeDrawingBrush.width = nextProps.width;
     canvas.freeDrawingBrush.color = nextProps.color;
+    canvas.isDrawingMode = nextProps.drawingMode;
 
     this.setState({
       canvas: canvas
@@ -203,10 +199,8 @@ class Canvas extends React.Component {
   handleFileChosen(e) {
 
     const file = e.target.files[0];
-    console.log(`file: ${file}`);
-    console.log(`This got fired`);
-
     const reader = new FileReader();
+
     reader.onload = (f) => {
 
       var data = f.target.result;
@@ -235,45 +229,28 @@ class Canvas extends React.Component {
       this.props.project.identifier);
   }
 
-  toggleDrawing() {
-
-    console.log(`Going to toggle drawing`);
-
-    if (this.state.canvas.isDrawingMode == true) {
-      this.state.canvas.isDrawingMode = false;
-    } else {
-      this.state.canvas.isDrawingMode = true;
-    }
-
-    this.setState({
-      canvas: this.state.canvas
-    });
-  }
-
   render(){
 
     const canvasStyle = {
       border: '1px solid grey',
+      'border-radius': '2px'
     };
 
     return (
+
       <div>
 
         <div>
           <canvas id="c" style={canvasStyle}> </canvas>
         </div>
 
-        <div>
-          <label className="btn btn-default">
-            Browse<input type="file" style={{display: 'none'}} 
+        <hr/>
+
+        <div className="spacer-top-md spacer-bottom-md" style={{'text-align': 'center'}}>
+          <label className="btn btn-default btn-file">
+            Image Upload<input type="file" style={{display: 'none'}} 
               onChange={this.handleFileChosen.bind(this)}/>
           </label>
-        </div>
-
-        <div>
-          <button 
-            onClick={this.toggleDrawing.bind(this)} 
-            className="btn btn-basic">Toggle</button>
         </div>
 
       </div>

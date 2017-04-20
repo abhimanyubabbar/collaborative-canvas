@@ -32,6 +32,7 @@
   },
   "scripts": {
     "server": "webpack-dev-server --content-base public/build --hot --inline",
-    "webpack": "webpack"
+    "build": "webpack",
+    "start": "node server.js"
   }
 }

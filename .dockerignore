@@ -1,0 +1,6 @@
+node_modules
+npm-debug.log
+
+/* Prevent the built  bundle from the source */
+/public/build/bundle.js
+/public/build/bundle.js.map

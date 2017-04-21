@@ -81,14 +81,16 @@ class Canvas extends React.Component {
     console.log(`Received a request to wire up the socket handlers`);
 
 
-    this.socket.on('object:removed', (rawObject)=> {
+    this.socket.on('object:removed', (identifier)=> {
+
+      console.log(`RECEIVED event for object removal finalllyy`);
 
       var objects = canvas.getObjects();
 
-      for(var i=0; i <objects.length; i++) {
+      for(var i=0; i < objects.length; i++) {
 
-        if(objects[i].id == rawObject.id) {
-          canvas.remove(objects[i].id);
+        if(objects[i].id == identifier) {
+          canvas.remove(objects[i]);
           break;
         }
       }
@@ -257,7 +259,7 @@ class Canvas extends React.Component {
         });
 
         // Inform the socket layer that the object has been removed.
-        this.socket.emit('object:added', undoRedoEvent.objectEvent);
+        this.socket.emit('object:added', undoRedoEvent.objectEvent.toJSON(['id']));
       }
 
       // finally update the local canvas.

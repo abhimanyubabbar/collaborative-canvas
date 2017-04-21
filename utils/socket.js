@@ -50,6 +50,22 @@ function socketHook(http) {
       socket.to(room).emit('object:modified', data);
     });
 
+
+    socket.on('object:removed', (identifier)=> {
+
+      log.info({id: identifier}, "Received event to remove the object from the database");
+
+      const room = socket.room;
+
+      if (room == null) {
+        log.warning({'socket-id': socket.id}, `Socket connection has no room configured`);
+        return;
+      }
+
+      storage.removeEventById(room, identifier);
+      socket.to(room).emit('object:removed', identifier);
+    });
+
     /**
      * `join` event gets fired at the client
      * side when they join a canvas to work on

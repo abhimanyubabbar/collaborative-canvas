@@ -113,26 +113,22 @@ function initialize() {
         .write();
     },
 
-    removeEventById: function(identifier, event) {
+    removeEventById: function(namespace,  identifier) {
 
-      db.get(identifier)
-        .remove({id: event.id})
+      log.info({'session-identifier': namespace, id: identifier},  `Received call to remove the identifier`);
+
+      db.get(namespace)
+        .remove({id: identifier})
         .write();
     },
 
-    getEvents: function(identifier) {
+    getEvents: function(namespace) {
 
-      log.info({'session-identifier': identifier}, `Received a call to fetch all the events`);
-      return db.get(identifier)
+      log.info({'session-identifier': namespace}, `Received a call to fetch all the events`);
+      return db.get(namespace)
         .value();
     },
 
-    getEventById: function(identifier, id) {
-
-      return db.get(namespace)
-        .find({id: id})
-        .value();
-    }
   };
 
 }

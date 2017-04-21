@@ -2,6 +2,10 @@
   margin: 0 auto;
 }
 
+.spacer-top-sm {
+  margin-top: 10px;
+}
+
 .spacer-top-md {
   margin-top: 20px;
 }

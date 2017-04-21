@@ -26,6 +26,6 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 
 app.use('/', router);
 
-http.listen(3000, ()=> {
-  log.info({port: 3000},'Server up and running');
+http.listen(8080, ()=> {
+  log.info({port: 8080},'Server up and running');
 });

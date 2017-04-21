@@ -14,7 +14,7 @@ function getEnv(envVar, fallback) {
 
 function initialize() {
 
-  const CANVAS_URL = getEnv("CANVAS_URL", "http://localhost:3000");
+  const CANVAS_URL = getEnv("CANVAS_URL", "http://localhost:8080");
 
   /**
    * The library used is promise based and therefore

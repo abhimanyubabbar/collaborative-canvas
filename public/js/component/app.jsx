@@ -15,7 +15,17 @@ class App extends React.Component {
       width: 3,
       drawingMode: true,
       currentProject: null,
+      objectEvent: null,
+      undoRedoEvent: null
     };
+  }
+
+  handleUndoRedoObjectEvent(event) {
+    console.log(`Received UndoRedo Event to be applied to the canvas, 
+      type: ${event.type}, event: ${JSON.stringify(event.objectEvent)}`);
+    this.setState({
+      undoRedoEvent: event
+    });
   }
 
   handleCanvasProperties(data) {
@@ -44,6 +54,16 @@ class App extends React.Component {
     console.log(`Failed: ${error}`);
   }
 
+  handleCanvasObjectEvent(objectEvent) {
+
+    console.log(`Received object event from the canvas layer`);
+    console.log(objectEvent.id);
+
+    this.setState({
+      objectEvent: objectEvent
+    });
+  }
+
 
   render() {
 
@@ -54,9 +74,11 @@ class App extends React.Component {
           <div className="col-md-1">
 
             <ProjectState 
+              project={this.state.currentProject}
+              objectEvent={this.state.objectEvent}
+              handleUndoRedoObjectEvent={this.handleUndoRedoObjectEvent.bind(this)}
               onProjectChangeSuccess={this.handleProjectChangeSuccess.bind(this)}
               onProjectChangeFailure={this.handleProjectChangeFailure.bind(this)}/>
-
           </div>
 
 
@@ -65,6 +87,8 @@ class App extends React.Component {
               project={this.state.currentProject}
               color={this.state.color}
               drawingMode={this.state.drawingMode}
+              undoRedoEvent={this.state.undoRedoEvent}
+              handleCanvasObjectEvent={this.handleCanvasObjectEvent.bind(this)}
               width={this.state.width}/>
           </div>
 

@@ -80,6 +80,22 @@ class Canvas extends React.Component {
 
     console.log(`Received a request to wire up the socket handlers`);
 
+
+    this.socket.on('object:removed', (rawObject)=> {
+
+      var objects = canvas.getObjects();
+
+      for(var i=0; i <objects.length; i++) {
+
+        if(objects[i].id == rawObject.id) {
+          canvas.remove(objects[i].id);
+          break;
+        }
+      }
+
+      this.setState({canvas: canvas});
+    });
+
     /**
      * EVENT: `object:added` 
      * This event is emitted by the server socket when
@@ -151,6 +167,22 @@ class Canvas extends React.Component {
       }
 
       e.target.id = uuid4();
+
+      /**
+       * To make things simple, we are allowing
+       * only images to be modifiable.
+       **/
+      if (e.target.type == 'path') {
+        e.target.hasControls = false;
+        e.target.lockMovementX = true;
+        e.target.lockMovementY = true;
+      }
+      
+      /**
+       * Fire the socket events and also add the task
+       * to the history to be used for undo-redo
+       **/
+      this.props.handleCanvasObjectEvent(e.target);
       this.socket.emit('object:added', e.target.toJSON(['id']));
     });
 
@@ -178,14 +210,77 @@ class Canvas extends React.Component {
       return;
     }
 
-    var canvas = this.state.canvas;
-    canvas.freeDrawingBrush.width = nextProps.width;
-    canvas.freeDrawingBrush.color = nextProps.color;
-    canvas.isDrawingMode = nextProps.drawingMode;
+    if ((nextProps.undoRedoEvent) && (!this.props.undoRedoEvent ||
+      this.props.undoRedoEvent.type != nextProps.undoRedoEvent.type ||
+      this.props.undoRedoEvent.objectEvent.id != nextProps.undoRedoEvent.objectEvent.id)) {
 
-    this.setState({
-      canvas: canvas
-    });
+      const undoRedoEvent = nextProps.undoRedoEvent;
+      const canvas = this.state.canvas;
+
+      /**
+       * If the type is undo, remove the object 
+       * added earlier to the canvas to be now removed
+       * from the canvas.
+       **/
+      if (undoRedoEvent.type == 'undo') {
+
+        const objects = canvas.getObjects();
+        var matchedObj = null;
+        for(var i = 0; i < objects.length ; i++) {
+
+          if (objects[i].id == undoRedoEvent.objectEvent.id) {
+            matchedObj = objects[i];
+            break;
+          }
+        }
+
+        if (matchedObj) {
+
+          console.log(`Going to remove the object: identifier: ${matchedObj.id} and undoredoevent identifer: ${undoRedoEvent.objectEvent.id}`);
+          console.log(`${JSON.stringify(matchedObj)}`);
+
+          canvas.remove(matchedObj);
+          // Inform the socket layer that the object has been removed.
+          this.socket.emit('object:removed', undoRedoEvent.objectEvent.id);
+        }
+
+      }
+
+      if (undoRedoEvent.type == 'redo') {
+
+        const event = undoRedoEvent.objectEvent.toJSON(['id']);
+
+        fabric.util.enlivenObjects([event], (objects)=> {
+          objects.forEach((o)=> {
+            canvas.add(o);
+          });
+        });
+
+        // Inform the socket layer that the object has been removed.
+        this.socket.emit('object:added', undoRedoEvent.objectEvent);
+      }
+
+      // finally update the local canvas.
+      this.setState({
+        canvas: canvas
+      });
+
+      return;
+    }
+
+    if (this.props.width != nextProps.width || 
+      this.props.color != nextProps.color || 
+      this.props.isDrawingMode != nextProps.isDrawingMode) {
+
+      var canvas = this.state.canvas;
+      canvas.freeDrawingBrush.width = nextProps.width;
+      canvas.freeDrawingBrush.color = nextProps.color;
+      canvas.isDrawingMode = nextProps.drawingMode;
+
+      this.setState({
+        canvas: canvas
+      });
+    }
   }
 
   /**

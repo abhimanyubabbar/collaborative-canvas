@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
-import api from '../utils/api';
+import api from '../../utils/api';
 
 const createProjectStyle= {
   content: {
@@ -44,8 +44,6 @@ class CreateProject extends React.Component {
     if (this.state.projectName == "") {
       return;
     }
-
-    console.log(`Going forward to create the project: ${this.state.projectName}`);
 
     api.createProject(this.state.projectName)
       .then((project)=> {

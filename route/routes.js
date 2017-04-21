@@ -6,10 +6,13 @@ var storage = require('../utils/storage');
 var Project = require('../model/session');
 var fabric = require('fabric').fabric;
 
+var bunyan = require('bunyan');
+var log = bunyan.createLogger({name: 'router'});
+
 
 router.get('/projects/:name', (req, res) => {
 
-  console.log(`ROUTER: Received a request to fetch project by name: ${req.params.name}`);
+  log.info({'project-name': req.params.name}, `Received a request to fetch project information`);
 
   const project = storage.getProject(req.params.name);
   if (project == null) {
@@ -21,7 +24,7 @@ router.get('/projects/:name', (req, res) => {
 
 router.get('/projects/canvas/:name', (req, res) => {
 
-  console.log(`ROUTER: Received a request to fetch canvas of a project: ${req.params.name}`);
+  log.info({'project-name': req.params.name}, `Received a request to fetch canvas information`);
 
   const project = storage.getProject(req.params.name);
   if (project == null) {
@@ -44,7 +47,7 @@ router.get('/projects/canvas/:name', (req, res) => {
 router.post('/projects', (req, res) => {
 
   const name = req.body.name;
-  console.log(`ROUTER: Received a request to create user session: ${name}`);
+  log.info({'project-name': name}, `ROUTER: Received a request to create user project`);
 
   try {
     var project = new Project(name);
@@ -53,7 +56,7 @@ router.post('/projects', (req, res) => {
     res.send({project: project});
   } 
   catch(err) {
-    console.log(`Unable to create session: ${err}, for project: ${name}`);
+    log.error({err: err, 'project-name': name}, `Unable to create project`);
     res.status(500).send({err: "Unable to create session", name: name});
   }
 
@@ -61,7 +64,7 @@ router.post('/projects', (req, res) => {
 
 router.get('/projects', (req, res) => {
   
-  console.log(`ROUTER: Received a request to fetch all the available projects`);
+ log.info(`Received a request to fetch all the available projects`);
 
   const projects = storage.getProjects();
 

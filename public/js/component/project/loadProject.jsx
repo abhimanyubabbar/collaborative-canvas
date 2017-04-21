@@ -1,6 +1,6 @@
 import React from 'react';
 import Modal from 'react-modal';
-import api from '../utils/api';
+import api from '../../utils/api';
 
 const loadProjectStyle = {
   content: {
@@ -43,9 +43,6 @@ class LoadProject extends React.Component {
 
   changeProject(e) {
 
-    console.log(`PROJECT SELECTOR: Value of the target: ${e.target.value}`);
-    console.log(e.target.value);
-
     this.setState({
       projectName: e.target.value
     });
@@ -53,18 +50,11 @@ class LoadProject extends React.Component {
 
   handleProjectChange() {
 
-    console.log(`LOAD: Pressed the load button`);
-    console.log(`${JSON.stringify(this.state.projectName)}`);
-
     if (this.state.projectName == "") {
       return;
     }
 
-    console.log(`Project Name Selected: ${JSON.stringify(this.state.projectName)}`);
-
     const project = this.state.projects[this.state.projectName];
-    console.log(`Project Selected: ${project}`);
-
     if(project == null) {
       return;
     }
@@ -81,14 +71,20 @@ class LoadProject extends React.Component {
 
         const projectMap = {};
         const projects = JSON.parse(data).projects;
+
         for (var i = 0; i < projects.length; i ++ ) {
           projectMap[projects[i].name] = projects[i];
         }
 
-        console.log(projectMap);
+        
+        var projectName = "";
+        if (projects.length > 0) {
+          projectName = projects[0].name;
+        }
 
         this.setState({
-          projects:  projectMap
+          projects:  projectMap,
+          projectName: projectName
         });
 
       })
@@ -112,7 +108,6 @@ class LoadProject extends React.Component {
         <option key={name} value={name}>{name}</option>
       );
     }
-
 
     return (
 

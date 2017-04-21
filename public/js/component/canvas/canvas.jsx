@@ -1,6 +1,6 @@
 import React from 'react';
 import 'fabric';
-import api from '../utils/api';
+import api from '../../utils/api';
 import uuid4 from 'uuid/v4';
 
 
@@ -28,7 +28,7 @@ class Canvas extends React.Component {
    **/
   loadCanvas(projectName, sessionIdentifier) {
 
-    console.log(`CANVAS: Received a request to loadCanvas, name: ${projectName}, ${sessionIdentifier}`);
+    console.log(`Received a request to loadCanvas, name: ${projectName}, ${sessionIdentifier}`);
 
     api.getCanvasJSON(projectName)
       .then((json)=> {
@@ -44,7 +44,6 @@ class Canvas extends React.Component {
           canvas.clear();
         }
 
-        console.log(JSON.stringify(json));
         canvas.loadFromJSON(json, canvas.renderAll.bind(canvas));
         canvas.freeDrawingBrush.color = this.props.color;
         canvas.freeDrawingBrush.width = this.props.width;
@@ -101,7 +100,7 @@ class Canvas extends React.Component {
 
     this.socket.on('object:modified', (modObj) => {
 
-      console.log(`CLIENT SOCKET: Received object:modified event from server`);
+      console.log(`Received object:modified event from server`);
 
       var objs = canvas.getObjects();
       var matchObj = null;
@@ -117,7 +116,6 @@ class Canvas extends React.Component {
         return;
       }
 
-      console.log(`Successfully removed the object`);
       canvas.remove(matchObj);
 
       fabric.util.enlivenObjects([modObj], (objects)=> {
@@ -158,8 +156,6 @@ class Canvas extends React.Component {
 
     canvas.on('object:modified', (e)=> {
 
-      console.log(`CANVAS: Fired an object modified event`);
-
       if (e.target.id == null) {
         console.log(`===== WARNING: target identifier should be set =====`);
         return;
@@ -173,7 +169,7 @@ class Canvas extends React.Component {
 
     // In case we have only seen a change in the project
     // identifier, we will reload the whole canvas from the api.
-    if (this.props.project.name != nextProps.project.name) {
+    if (!this.props.project || (this.props.project.name != nextProps.project.name)) {
 
       this.loadCanvas(
         nextProps.project.name, 
@@ -221,40 +217,53 @@ class Canvas extends React.Component {
   }
 
   componentDidMount() {
+  }
 
-    // Load the canvas to be displayed.
-    // to the front end.
-    this.loadCanvas(
-      this.props.project.name, 
-      this.props.project.identifier);
+  renderCanvas() {
+
+      const canvasStyle = {
+        border: '1px solid grey',
+        'borderRadius': '2px'
+      };
+
+      return (
+
+        <div>
+
+          <div>
+            <canvas id="c" style={canvasStyle}> </canvas>
+          </div>
+
+          <hr/>
+
+          <div className="spacer-top-md spacer-bottom-md" style={{'textAlign': 'center'}}>
+            <label className="btn btn-default btn-file">
+              Image Upload<input type="file" style={{display: 'none'}} 
+                onChange={this.handleFileChosen.bind(this)}/>
+            </label>
+          </div>
+
+        </div>
+      );
+  }
+
+  renderLoader() {
+
+    return (
+      <div>
+        <h1 style={{'textAlign': 
+          'center', 
+          'fontSize': '7em', 
+          'color': 'lightgrey'}}>NO CANVAS SELECTED</h1>
+      </div>
+    );
   }
 
   render(){
 
-    const canvasStyle = {
-      border: '1px solid grey',
-      'border-radius': '2px'
-    };
+    const project= this.props.project;
+    return project ? this.renderCanvas() : this.renderLoader();
 
-    return (
-
-      <div>
-
-        <div>
-          <canvas id="c" style={canvasStyle}> </canvas>
-        </div>
-
-        <hr/>
-
-        <div className="spacer-top-md spacer-bottom-md" style={{'text-align': 'center'}}>
-          <label className="btn btn-default btn-file">
-            Image Upload<input type="file" style={{display: 'none'}} 
-              onChange={this.handleFileChosen.bind(this)}/>
-          </label>
-        </div>
-
-      </div>
-    );
   }
 }
 

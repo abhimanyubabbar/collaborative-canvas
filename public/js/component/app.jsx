@@ -1,9 +1,9 @@
 'use strict';
 
 import React from 'react';
-import Canvas from './canvas.jsx';
-import CanvasProperties from './canvas-properties.jsx';
-import ProjectState from './project.jsx';
+import Canvas from './canvas/canvas.jsx';
+import CanvasProperties from './properties/canvas-properties.jsx';
+import ProjectState from './project/project.jsx';
 
 class App extends React.Component {
 
@@ -14,7 +14,7 @@ class App extends React.Component {
       color: "#000000",
       width: 3,
       drawingMode: true,
-      currentProject: {name: 'default', identifier: 'uuid'},
+      currentProject: null,
     };
   }
 
@@ -72,6 +72,7 @@ class App extends React.Component {
             <CanvasProperties 
               color={this.state.color} 
               width={this.state.width}
+              drawingMode={this.state.drawingMode}
               onChangeComplete={this.handleCanvasProperties.bind(this)}/>
           </div>
 

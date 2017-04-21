@@ -21,14 +21,17 @@
 'use strict';
 
 var low = require('lowdb');
+var bunyan = require('bunyan');
+
+var log = bunyan.createLogger({name: 'storage'});
 
 function initialize() {
 
   const db = low('db.json');
-
   const PROJECT = 'project';
 
   if (!db.has(PROJECT).value()) {
+    log.info({'db-name': 'db.json'}, 'Initializing the database');
     db.set(PROJECT, {}).write();
   }
 
@@ -36,7 +39,8 @@ function initialize() {
 
     createProject: function(projectName, sessionIdentifier) {
 
-      console.log(`DB: Received a call to create new project, name: ${projectName}, identifier: ${sessionIdentifier}`);
+      log.info({ 'project-name': projectName, 'session-identifier': sessionIdentifier}, 
+        `Received a call to create new project`);
 
       const idx = PROJECT + "." + projectName;
       if (db.has(idx).value()) {
@@ -49,7 +53,7 @@ function initialize() {
 
     createSession: function(identifier) {
 
-      console.log(`DB: Received a call to create session: ${identifier}`);
+      log.info({'session-identifier': identifier}, `Received a call to create session identifier`);
 
       if (db.has(identifier).value()) {
         return;
@@ -60,14 +64,14 @@ function initialize() {
 
     getProjects: function() {
 
-      console.log(`DB: Received a call to fetch all the projects`);
+      log.info(`Received a call to fetch all the projects`);
 
       return db.get(PROJECT).value();
     },
 
     getProject: function(name) {
 
-      console.log(`DB: Received a call to get project by name: ${name}`);
+      log.info({'project-name': name}, `Received a call to fetch project`);
 
       const idx = PROJECT + "." + name;
       return db.get(idx).value();
@@ -77,11 +81,16 @@ function initialize() {
     addEvent: function(identifier, event) {
 
       if (!db.has(identifier).value()) {
-        console.log(`DB: No data location for the identfier: ${identifier}, dropping.`);
+
+        log.warning({'session-identifier': identifier, 'event-type': event.type, 'event-id': event.id},
+          `No data location for the identfier dropping event`);
+
         return;
       }
 
-      console.log(`DB: Received a call to add an event, identifier: ${identifier}, event: ${event}`);
+      log.info({'session-identifier': identifier, 'event-type': event.type, 'event-id': event.id},
+        `Received a call to add an event`);
+
       db.get(identifier)
         .push(event)
         .write();
@@ -89,10 +98,12 @@ function initialize() {
 
     updateEvent: function(identifier, event) {
 
-      console.log(`UPDATE EVENT ${identifier} : ${JSON.stringify(event)}`);
+      log.info({'session-identifier': identifier, 'event-type': event.type, 'event-id': event.id},
+        `Received a call to update the event`);
 
       if (!db.has(identifier).value()) {
-        console.log(`DB: No data location for the identfier: ${identifier}, dropping.`);
+        log.warning({'session-identifier': identifier, 'event-type': event.type, 'event-id': event.id},
+          `Unable to locate the identifier, dropping the update`);
         return;
       }
 
@@ -111,7 +122,7 @@ function initialize() {
 
     getEvents: function(identifier) {
 
-      console.log(`DB: Received a call to fetch events by identifier: ${identifier}`);
+      log.info({'session-identifier': identifier}, `Received a call to fetch all the events`);
       return db.get(identifier)
         .value();
     },

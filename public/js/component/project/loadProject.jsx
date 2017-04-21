@@ -43,9 +43,6 @@ class LoadProject extends React.Component {
 
   changeProject(e) {
 
-    console.log(`PROJECT SELECTOR: Value of the target: ${e.target.value}`);
-    console.log(e.target.value);
-
     this.setState({
       projectName: e.target.value
     });
@@ -53,18 +50,11 @@ class LoadProject extends React.Component {
 
   handleProjectChange() {
 
-    console.log(`LOAD: Pressed the load button`);
-    console.log(`${JSON.stringify(this.state.projectName)}`);
-
     if (this.state.projectName == "") {
       return;
     }
 
-    console.log(`Project Name Selected: ${JSON.stringify(this.state.projectName)}`);
-
     const project = this.state.projects[this.state.projectName];
-    console.log(`Project Selected: ${project}`);
-
     if(project == null) {
       return;
     }
@@ -91,8 +81,6 @@ class LoadProject extends React.Component {
         if (projects.length > 0) {
           projectName = projects[0].name;
         }
-
-        console.log(projectMap);
 
         this.setState({
           projects:  projectMap,

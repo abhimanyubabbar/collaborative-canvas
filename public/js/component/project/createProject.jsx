@@ -45,8 +45,6 @@ class CreateProject extends React.Component {
       return;
     }
 
-    console.log(`Going forward to create the project: ${this.state.projectName}`);
-
     api.createProject(this.state.projectName)
       .then((project)=> {
         console.log(`Successfully Created the project: ${JSON.stringify(project)}`);

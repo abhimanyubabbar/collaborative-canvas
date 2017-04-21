@@ -28,7 +28,7 @@ class Canvas extends React.Component {
    **/
   loadCanvas(projectName, sessionIdentifier) {
 
-    console.log(`CANVAS: Received a request to loadCanvas, name: ${projectName}, ${sessionIdentifier}`);
+    console.log(`Received a request to loadCanvas, name: ${projectName}, ${sessionIdentifier}`);
 
     api.getCanvasJSON(projectName)
       .then((json)=> {
@@ -44,7 +44,6 @@ class Canvas extends React.Component {
           canvas.clear();
         }
 
-        console.log(JSON.stringify(json));
         canvas.loadFromJSON(json, canvas.renderAll.bind(canvas));
         canvas.freeDrawingBrush.color = this.props.color;
         canvas.freeDrawingBrush.width = this.props.width;
@@ -101,7 +100,7 @@ class Canvas extends React.Component {
 
     this.socket.on('object:modified', (modObj) => {
 
-      console.log(`CLIENT SOCKET: Received object:modified event from server`);
+      console.log(`Received object:modified event from server`);
 
       var objs = canvas.getObjects();
       var matchObj = null;
@@ -117,7 +116,6 @@ class Canvas extends React.Component {
         return;
       }
 
-      console.log(`Successfully removed the object`);
       canvas.remove(matchObj);
 
       fabric.util.enlivenObjects([modObj], (objects)=> {
@@ -157,8 +155,6 @@ class Canvas extends React.Component {
     });
 
     canvas.on('object:modified', (e)=> {
-
-      console.log(`CANVAS: Fired an object modified event`);
 
       if (e.target.id == null) {
         console.log(`===== WARNING: target identifier should be set =====`);
@@ -221,7 +217,6 @@ class Canvas extends React.Component {
   }
 
   componentDidMount() {
-    console.log(`EXECUTING COMPONENT DID MOUNT`);
   }
 
   renderCanvas() {

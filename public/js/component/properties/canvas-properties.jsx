@@ -1,6 +1,12 @@
 import React from 'react';
 import {CompactPicker} from 'react-color';
 
+
+/**
+ * NumberPicker component is basically a select drop down
+ * box which provides the user choices regarding the width
+ * of the brush.
+ **/
 class NumberPicker extends React.Component {
 
   constructor(props) {
@@ -36,6 +42,11 @@ class NumberPicker extends React.Component {
 }
 
 
+/**
+ * Properties Component represents encapsulation of the
+ * combination of the components used to set the properties of the
+ * main canvas.
+ **/
 class Properties extends React.Component {
 
   constructor(props) {
@@ -46,9 +57,11 @@ class Properties extends React.Component {
     this.drawingMode = props.drawingMode;
   }
 
+  /**
+   * Handle the change in the color of the brush
+   * stroke used currently on the canvas.
+   **/
   handleColorChange(color) {
-
-    console.log(`COLORCHANGE called`);
 
     this.color = color.hex;
     this.props.onChangeComplete({
@@ -58,11 +71,14 @@ class Properties extends React.Component {
     });
   }
 
+  /**
+   * Handle the change in number representing the
+   * brush stroke width of pencil on the canvas.
+   **/
   handleNumberChange(number) {
 
-    console.log(`NUMBERCHANGE called`);
-
     this.width = parseInt(number);
+
     this.props.onChangeComplete({
       color: this.color,
       width: this.width,
@@ -71,6 +87,12 @@ class Properties extends React.Component {
 
   }
 
+  /**
+   * Handle the user request to toggle the drawing mode.
+   * Toggling the drawing mode allows the user to switch the
+   * canvas to the state in which the objects can be selected and 
+   * resized in the system.
+   **/
   handleDrawingModeToggle() {
 
     console.log(`CHECKBOX reset called`);

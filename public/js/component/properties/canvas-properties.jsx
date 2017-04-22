@@ -99,6 +99,7 @@ class Properties extends React.Component {
 
     this.drawingMode = !this.drawingMode;
 
+    console.log(`this.drawingMode; ${this.drawingMode}`);
     this.props.onChangeComplete({
       color: this.color,
       width: this.width,

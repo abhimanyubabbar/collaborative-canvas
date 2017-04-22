@@ -227,17 +227,19 @@ class Canvas extends React.Component {
    **/
   componentWillReceiveProps(nextProps) {
 
+
+    console.log(JSON.stringify(nextProps));
+
     /**
      * CHECK 1: In case the user decides to update the project, the canvas component
      * needs to wipe the state and load the new state by the project which the user needs to load.
      **/
-    if (!this.props.project || (this.props.project.name != nextProps.project.name)) {
+    if ((nextProps.project) && 
+      (!this.props.project || (this.props.project.name != nextProps.project.name))){
 
       this.loadCanvas(
         nextProps.project.name, 
         nextProps.project.identifier);
-
-      return;
     }
 
     /**
@@ -314,9 +316,12 @@ class Canvas extends React.Component {
      * width of the strokes to be used needs to be updated, we need to
      * update the properties of the current canvas and reload the state.
      **/
-    if (this.props.width != nextProps.width || 
+    if (this.state.canvas && (this.props.width != nextProps.width || 
       this.props.color != nextProps.color || 
-      this.props.isDrawingMode != nextProps.isDrawingMode) {
+      this.props.drawingMode != nextProps.drawingMode)) {
+
+      console.log(`New properties received: color: ${nextProps.color}, 
+        width: ${nextProps.color}, isDrawingMode:${nextProps.drawingMode}`);
 
       var canvas = this.state.canvas;
       canvas.freeDrawingBrush.width = nextProps.width;

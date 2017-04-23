@@ -228,8 +228,6 @@ class Canvas extends React.Component {
   componentWillReceiveProps(nextProps) {
 
 
-    console.log(JSON.stringify(nextProps));
-
     /**
      * CHECK 1: In case the user decides to update the project, the canvas component
      * needs to wipe the state and load the new state by the project which the user needs to load.

@@ -82,9 +82,6 @@ class UndoRedo extends React.Component {
     // Add the undo task to the redo list.
     const lastEvent= this.undo.pop();
 
-    console.log(`UNDO Item popped  ${JSON.stringify(lastEvent)}`);
-    console.log(lastEvent.id);
-
     this.redo.push(lastEvent);
     this.props.onChangeComplete({type: 'undo', objectEvent: lastEvent});
   }

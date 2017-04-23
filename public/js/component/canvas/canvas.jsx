@@ -73,14 +73,18 @@ class Canvas extends React.Component {
    **/
   socketEventHandlers(canvas) {
 
+    console.log(`Received a request to wire up the socket handlers`);
+
     if (canvas == null ) {
       console.log(`Canvas not loaded, not wiring any event handlers`);
       return;
     }
 
-    console.log(`Received a request to wire up the socket handlers`);
-
-
+    /**
+     * EVENT: `object:removed` is fired by the server sockets
+     * when the client is connected to a room in which the other collaborator
+     * wants to undo an event which is currently only `object:added`
+     **/
     this.socket.on('object:removed', (identifier)=> {
 
       console.log(`RECEIVED event for object removal finalllyy`);
@@ -116,9 +120,13 @@ class Canvas extends React.Component {
     });
 
 
+    /**
+     * EVENT: `object:modified` is fired by the server socket 
+     * when an earlier object created is modified in terms of shape, position
+     * size etc. At this moment, only images are allowed to be modified and therefore
+     * this event is fired for the changes in the image.
+     **/
     this.socket.on('object:modified', (modObj) => {
-
-      console.log(`Received object:modified event from server`);
 
       var objs = canvas.getObjects();
       var matchObj = null;
@@ -161,7 +169,9 @@ class Canvas extends React.Component {
 
     console.log(`Received a request to wire up the canvas event handlers`);
 
-    // See what get fires back to the image.
+    /**
+     *
+     **/
     canvas.on('object:added', (e) => {
 
       if (e.target.id != null) {
@@ -171,18 +181,28 @@ class Canvas extends React.Component {
       e.target.id = uuid4();
 
       /**
-       * To make things simple, we are allowing
-       * only images to be modifiable.
+       * Path objects created by the user are not modifiable,
+       * only the images uploaded are the ones which could
+       * be updated/modified by the user.
        **/
       if (e.target.type == 'path') {
+
         e.target.hasControls = false;
         e.target.lockMovementX = true;
         e.target.lockMovementY = true;
       }
       
       /**
-       * Fire the socket events and also add the task
-       * to the history to be used for undo-redo
+       * Inform the server socket about the changes that are made
+       * by the client by firing  `object:added` events to the server.
+       *
+       * In addition to this, execute the `handleCanvasObjectEvent` handler
+       * which captures the object added to the canvas and update the
+       * history of the events. The history in turn is used when the user
+       * wants to perform the undo-redo task.
+       *
+       * WARNING: Here we are storing the canvas as the object and not a json format.
+       * This means that we have to inflate the object when running the redo event.
        **/
       this.props.handleCanvasObjectEvent(e.target);
       this.socket.emit('object:added', e.target.toJSON(['id']));
@@ -191,7 +211,7 @@ class Canvas extends React.Component {
     canvas.on('object:modified', (e)=> {
 
       if (e.target.id == null) {
-        console.log(`===== WARNING: target identifier should be set =====`);
+        console.log(`Received a modiied event for the object which is missing unique identifier, dropping`);
         return;
       }
 
@@ -199,19 +219,35 @@ class Canvas extends React.Component {
     });
   }
 
+  /**
+   * The canvas object interacts with a lot of
+   * external components through props. Therefore whenever the data from
+   * the external components will change, this function will be fired. Therefore, we
+   * have to check which prop got updated and act accordingly.
+   **/
   componentWillReceiveProps(nextProps) {
 
-    // In case we have only seen a change in the project
-    // identifier, we will reload the whole canvas from the api.
-    if (!this.props.project || (this.props.project.name != nextProps.project.name)) {
+
+    /**
+     * CHECK 1: In case the user decides to update the project, the canvas component
+     * needs to wipe the state and load the new state by the project which the user needs to load.
+     **/
+    if ((nextProps.project) && 
+      (!this.props.project || (this.props.project.name != nextProps.project.name))){
 
       this.loadCanvas(
         nextProps.project.name, 
         nextProps.project.identifier);
-
-      return;
     }
 
+    /**
+     * CHECK 2: Below conditional execution is done to provide handling for
+     * undo and redo events fired by the user.
+     *
+     * Each event contains the type of the event and object associated with the
+     * event. Therefore, we have the below format of the event that will be sent to this 
+     * component {type: redo/undo,  objectEvent: event}
+     **/
     if ((nextProps.undoRedoEvent) && (!this.props.undoRedoEvent ||
       this.props.undoRedoEvent.type != nextProps.undoRedoEvent.type ||
       this.props.undoRedoEvent.objectEvent.id != nextProps.undoRedoEvent.objectEvent.id)) {
@@ -238,9 +274,6 @@ class Canvas extends React.Component {
 
         if (matchedObj) {
 
-          console.log(`Going to remove the object: identifier: ${matchedObj.id} and undoredoevent identifer: ${undoRedoEvent.objectEvent.id}`);
-          console.log(`${JSON.stringify(matchedObj)}`);
-
           canvas.remove(matchedObj);
           // Inform the socket layer that the object has been removed.
           this.socket.emit('object:removed', undoRedoEvent.objectEvent.id);
@@ -248,8 +281,15 @@ class Canvas extends React.Component {
 
       }
 
+      /**
+       * If the type of event is redo, ask the canvas
+       * to redraw the whole event received from the history over and
+       * onto the canvas.
+       **/
       if (undoRedoEvent.type == 'redo') {
 
+        // Inflate the object again as when we added to the history
+        // in which in a different format.
         const event = undoRedoEvent.objectEvent.toJSON(['id']);
 
         fabric.util.enlivenObjects([event], (objects)=> {
@@ -258,21 +298,28 @@ class Canvas extends React.Component {
           });
         });
 
-        // Inform the socket layer that the object has been removed.
+        //Inform the server sockets that new object has been drawn onto the canvas.
         this.socket.emit('object:added', undoRedoEvent.objectEvent.toJSON(['id']));
       }
 
-      // finally update the local canvas.
+
       this.setState({
         canvas: canvas
       });
 
-      return;
     }
 
-    if (this.props.width != nextProps.width || 
+    /**
+     * CHECK 3: In case of canvas properties like the color of the brush and the
+     * width of the strokes to be used needs to be updated, we need to
+     * update the properties of the current canvas and reload the state.
+     **/
+    if (this.state.canvas && (this.props.width != nextProps.width || 
       this.props.color != nextProps.color || 
-      this.props.isDrawingMode != nextProps.isDrawingMode) {
+      this.props.drawingMode != nextProps.drawingMode)) {
+
+      console.log(`New properties received: color: ${nextProps.color}, 
+        width: ${nextProps.color}, isDrawingMode:${nextProps.drawingMode}`);
 
       var canvas = this.state.canvas;
       canvas.freeDrawingBrush.width = nextProps.width;
@@ -305,15 +352,11 @@ class Canvas extends React.Component {
           top: 10, angle: 0}).scale(0.8);
         canvas.add(oImg).renderAll();
 
-        //Render the new canvas after the image upload
         this.setState({canvas: canvas});
       });
     };
 
     reader.readAsDataURL(file);
-  }
-
-  componentDidMount() {
   }
 
   renderCanvas() {

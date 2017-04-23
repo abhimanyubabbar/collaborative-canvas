@@ -39,8 +39,6 @@ class App extends React.Component {
 
   handleProjectChangeSuccess(project) {
 
-    console.log(`APP: ${JSON.stringify(project)}`);
-
     this.setState({
       currentProject: {
         name:project.name,

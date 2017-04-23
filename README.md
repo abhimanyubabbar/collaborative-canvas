@@ -48,7 +48,7 @@ To better shorten the build efforts, Rakefile is provided to perform the above t
 
 **Requirements**: `Node v 4.7 or greater`, `yarn`, `npm`
 
-1. The project contains `package.json` which exposes the dependencies for the project. Before the dependencies could be installed, we need to install some external libraries for one of the dependency `node-canvas` which is used to store the canvas state onto the server. The dependencies could be installed for the environment using the link provided.
+1. The project contains `package.json` which exposes the dependencies for the project. Before the dependencies could be installed, we need to install some external libraries for one of the dependency [node-canvas](https://github.com/Automattic/node-canvas) which is used to store the canvas state onto the server. The dependencies could be installed for the environment using the link provided.
 
 2. After that we can do `yarn install` to install all the dependencies.
 3. We need to run `yarn run webpack` after it to create the bundle for the client code.
